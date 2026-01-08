@@ -209,14 +209,14 @@ export default function App() {
     if (!subject) return null
     
     return (
-      <div className="bg-white rounded-xl shadow p-6 min-w-[250px] border-l-4" style={{ borderColor: subject.iconColor }}>
+      <div className="bg-white rounded-xl shadow p-6 border-l-4 h-full" style={{ borderColor: subject.iconColor }}>
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full flex items-center justify-center text-white" style={{ background: subject.iconColor }}>
             <i className={subject.icon}></i>
           </div>
-          <div>
-            <h3 className="font-bold">{subject.name}</h3>
-            <p className="text-sm text-gray-500">{subject.details}</p>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold truncate">{subject.name}</h3>
+            <p className="text-sm text-gray-500 truncate">{subject.details}</p>
           </div>
         </div>
 
@@ -283,11 +283,13 @@ export default function App() {
         <p className="text-gray-600 mt-2">MCQ Practice • Analytics • PSC Pattern</p>
       </header>
 
-      {/* Scrollable Subject Cards */}
-      <div className="max-w-6xl mx-auto flex gap-6 overflow-x-auto py-4">
-        {Object.keys(SUBJECTS).map(id => (
-          <SubjectCard key={id} subjectId={id} />
-        ))}
+      {/* Grid Subject Cards */}
+      <div className="max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 py-4">
+          {Object.keys(SUBJECTS).map(id => (
+            <SubjectCard key={id} subjectId={id} />
+          ))}
+        </div>
       </div>
 
       {/* TEST MODAL */}
