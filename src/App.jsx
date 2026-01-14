@@ -3703,7 +3703,7 @@ const STUDY_TIPS = {
   }
 },
 
- "Programming in C": {
+ "C Programming": {
   icon: "fas fa-c",
   color: "#3B82F6",
   tricks: [
