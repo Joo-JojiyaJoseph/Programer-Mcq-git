@@ -7268,12 +7268,12 @@ export default function App() {
       {/* STUDY TIPS MODAL */}
       {showTips && (
         <div
-          className="fixed inset-0  flex items-center justify-center z-[60] p-4 backdrop-blur-sm"
+          className="fixed inset-0  flex items-center justify-center z-[60] p-4 backdrop-blur-sm bg-black/30"
           onClick={(e) => e.target === e.currentTarget && setShowTips(false)}
         >
           <div className="bg-white rounded-2xl w-full max-w-6xl max-h-[95vh] overflow-y-auto shadow-2xl border border-gray-200 ">
             {/* Header */}
-            <div className="sticky top-0  pb-4 border-b border-gray-200 0 z-10 p-6 bg-gray-500">
+            <div className="top-0  pb-4 border-b border-gray-200 0 z-10 p-6 bg-gray-500">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
