@@ -1438,7 +1438,7 @@ const STUDY_TIPS = {
       "ds-29": "Red-black tree maintains color properties",
       "ds-30": "B-tree used for disk-based storage",
       "ds-31": "Trie used for dictionary implementations",
-      "ds-31": "Segment tree for range queries",
+      "ds-101": "Segment tree for range queries",
       "ds-32": "Fenwick tree for prefix sums",
       "ds-33": "Union-Find for disjoint sets",
       "ds-34": "Adjacency matrix: O(V²) space",
