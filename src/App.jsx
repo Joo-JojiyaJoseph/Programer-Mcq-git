@@ -7469,346 +7469,346 @@ export default function App() {
         </div>
       </header>
 
-      {/* TIME TABLE MODAL */}
-      {showTimeTable && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-4"
-          onClick={(e) => e.target === e.currentTarget && setShowTimeTable(false)}
-        >
-          <div className="bg-white rounded-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto shadow-2xl">
-            {/* Header */}
-            <div className=" top-0 bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-3xl font-bold mb-2">Exam Time Table & Study Plan</h2>
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-2">
-                      <i className="fas fa-calendar-day"></i>
-                      <span>Exam Date: {EXAM_TIMETABLE.examDate}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <i className="fas fa-clock"></i>
-                      <span>Weeks Remaining: {calculateWeeksRemaining()} weeks</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <i className="fas fa-user-tie"></i>
-                      <span>Working Professional Plan</span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowTimeTable(false)}
-                  className="text-white hover:text-gray-200 text-2xl"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
+    
+     {/* TIME TABLE MODAL */}
+{showTimeTable && (
+  <div
+    className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-2 sm:p-4"
+    onClick={(e) => e.target === e.currentTarget && setShowTimeTable(false)}
+  >
+    <div className="bg-white rounded-xl w-full max-w-6xl max-h-[90vh] sm:max-h-[95vh] overflow-y-auto shadow-2xl mx-2 sm:mx-4">
+      {/* Header */}
+      <div className=" top-0 z-10 bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 sm:p-6">
+        <div className="flex justify-between items-start gap-4">
+          <div className="flex-1">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">Exam Time Table & Study Plan</h2>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 text-sm sm:text-base">
+              <div className="flex items-center gap-2">
+                <i className="fas fa-calendar-day text-sm"></i>
+                <span>Exam Date: {EXAM_TIMETABLE.examDate}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <i className="fas fa-clock text-sm"></i>
+                <span>Weeks: {calculateWeeksRemaining()}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <i className="fas fa-user-tie text-sm"></i>
+                <span className="hidden sm:inline">Working Professional Plan</span>
+                <span className="sm:hidden">Pro Plan</span>
               </div>
             </div>
+          </div>
+          <button
+            onClick={() => setShowTimeTable(false)}
+            className="text-white hover:text-gray-200 text-xl sm:text-2xl flex-shrink-0 mt-1"
+            aria-label="Close"
+          >
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
 
-            <div className="p-6">
-              {/* Study Phases */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-road text-blue-600"></i>
-                  Study Phases Timeline
-                </h3>
-                <div className="space-y-6">
-                  {EXAM_TIMETABLE.phases.map((phase, index) => (
-                    <div
-                      key={index}
-                      className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow"
-                    >
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-                              {index + 1}
-                            </span>
-                            <h4 className="text-xl font-bold text-gray-900">{phase.name}</h4>
-                          </div>
-                          <div className="flex items-center gap-4 text-gray-600 ml-14">
-                            <span className="flex items-center gap-1">
-                              <i className="fas fa-calendar-alt text-sm"></i>
-                              {phase.duration}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <i className="fas fa-bullseye text-sm"></i>
-                              {phase.focus}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <i className="fas fa-clock text-sm"></i>
-                              {phase.studyHours}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid md:grid-cols-3 gap-6">
-                        <div className="bg-blue-50 rounded-lg p-4">
-                          <h5 className="font-bold text-blue-800 mb-2 flex items-center gap-2">
-                            <i className="fas fa-book"></i>
-                            Subjects
-                          </h5>
-                          <ul className="space-y-1">
-                            {phase.subjects.map((subject, idx) => (
-                              <li key={idx} className="text-gray-700">• {subject}</li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="bg-green-50 rounded-lg p-4">
-                          <h5 className="font-bold text-green-800 mb-2 flex items-center gap-2">
-                            <i className="fas fa-flag-checkered"></i>
-                            Goals
-                          </h5>
-                          <ul className="space-y-2">
-                            {phase.goals.map((goal, idx) => (
-                              <li key={idx} className="text-gray-700 flex items-start">
-                                <span className="text-green-600 mr-2">•</span>
-                                {goal}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="bg-yellow-50 rounded-lg p-4">
-                          <h5 className="font-bold text-yellow-800 mb-2 flex items-center gap-2">
-                            <i className="fas fa-lightbulb"></i>
-                            Tips
-                          </h5>
-                          <ul className="space-y-2">
-                            {phase.tips.map((tip, idx) => (
-                              <li key={idx} className="text-gray-700 flex items-start">
-                                <span className="text-yellow-600 mr-2">•</span>
-                                {tip}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
+      <div className="p-4 sm:p-6">
+        {/* Study Phases */}
+        <div className="mb-8 sm:mb-10">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <i className="fas fa-road text-blue-600 text-sm sm:text-base"></i>
+            Study Phases Timeline
+          </h3>
+          <div className="space-y-4 sm:space-y-6">
+            {EXAM_TIMETABLE.phases.map((phase, index) => (
+              <div
+                key={index}
+                className="border border-gray-200 rounded-xl p-4 sm:p-6 hover:shadow-lg transition-shadow"
+              >
+                <div className="flex items-start justify-between mb-3 sm:mb-4">
+                  <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                      <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm sm:text-base flex-shrink-0">
+                        {index + 1}
+                      </span>
+                      <h4 className="text-base sm:text-lg md:text-xl font-bold text-gray-900">{phase.name}</h4>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Daily Schedule */}
-              <div className="grid md:grid-cols-2 gap-8 mb-10">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                    <i className="fas fa-calendar-day text-purple-600"></i>
-                    Weekday Schedule
-                  </h3>
-                  <div className="space-y-3">
-                    {EXAM_TIMETABLE.workingProfessionalSchedule.weekday.map((slot, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
-                      >
-                        <div className="w-32 font-bold text-blue-700">{slot.time}</div>
-                        <div className="flex-1 text-gray-700">{slot.activity}</div>
-                      </div>
-                    ))}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-gray-600 text-sm sm:ml-12 sm:mt-1">
+                      <span className="flex items-center gap-1">
+                        <i className="fas fa-calendar-alt text-xs sm:text-sm"></i>
+                        {phase.duration}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <i className="fas fa-bullseye text-xs sm:text-sm"></i>
+                        {phase.focus}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <i className="fas fa-clock text-xs sm:text-sm"></i>
+                        {phase.studyHours}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                    <i className="fas fa-calendar-weekend text-green-600"></i>
-                    Weekend Schedule
-                  </h3>
-                  <div className="space-y-3">
-                    {EXAM_TIMETABLE.workingProfessionalSchedule.weekend.map((slot, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
-                      >
-                        <div className="w-32 font-bold text-green-700">{slot.time}</div>
-                        <div className="flex-1 text-gray-700">{slot.activity}</div>
-                      </div>
-                    ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-4">
+                  <div className="bg-blue-50 rounded-lg p-3 sm:p-4">
+                    <h5 className="font-bold text-blue-800 mb-2 flex items-center gap-2 text-sm sm:text-base">
+                      <i className="fas fa-book text-xs sm:text-sm"></i>
+                      Subjects
+                    </h5>
+                    <ul className="space-y-1 text-sm sm:text-base">
+                      {phase.subjects.map((subject, idx) => (
+                        <li key={idx} className="text-gray-700">• {subject}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="bg-green-50 rounded-lg p-3 sm:p-4">
+                    <h5 className="font-bold text-green-800 mb-2 flex items-center gap-2 text-sm sm:text-base">
+                      <i className="fas fa-flag-checkered text-xs sm:text-sm"></i>
+                      Goals
+                    </h5>
+                    <ul className="space-y-2">
+                      {phase.goals.map((goal, idx) => (
+                        <li key={idx} className="text-gray-700 flex items-start text-sm sm:text-base">
+                          <span className="text-green-600 mr-2">•</span>
+                          {goal}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="bg-yellow-50 rounded-lg p-3 sm:p-4">
+                    <h5 className="font-bold text-yellow-800 mb-2 flex items-center gap-2 text-sm sm:text-base">
+                      <i className="fas fa-lightbulb text-xs sm:text-sm"></i>
+                      Tips
+                    </h5>
+                    <ul className="space-y-2">
+                      {phase.tips.map((tip, idx) => (
+                        <li key={idx} className="text-gray-700 flex items-start text-sm sm:text-base">
+                          <span className="text-yellow-600 mr-2">•</span>
+                          {tip}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
 
-              {/* Subject Priority */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-sort-amount-down text-red-600"></i>
-                  Subject Priority & Weightage
-                </h3>
-                <div className="grid md:grid-cols-3 gap-4">
-                  {EXAM_TIMETABLE.subjectPriority.map((subject, index) => (
-                    <div
-                      key={index}
-                      className={`p-4 rounded-lg border ${
-                        subject.priority === "Very High"
-                          ? "bg-red-50 border-red-200"
-                          : subject.priority === "High"
-                          ? "bg-orange-50 border-orange-200"
-                          : subject.priority === "Medium"
-                          ? "bg-yellow-50 border-yellow-200"
-                          : "bg-gray-50 border-gray-200"
-                      }`}
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <h4 className="font-bold text-gray-900">{subject.subject}</h4>
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          subject.priority === "Very High"
-                            ? "bg-red-600 text-white"
-                            : subject.priority === "High"
-                            ? "bg-orange-600 text-white"
-                            : subject.priority === "Medium"
-                            ? "bg-yellow-600 text-white"
-                            : "bg-gray-600 text-white"
-                        }`}>
-                          {subject.priority}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-600">
-                        <span>Weightage: {subject.weightage}</span>
-                        <span>Order: #{subject.studyOrder}</span>
-                      </div>
-                    </div>
-                  ))}
+        {/* Daily Schedule */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-10">
+          <div>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+              <i className="fas fa-calendar-day text-purple-600 text-sm sm:text-base"></i>
+              Weekday Schedule
+            </h3>
+            <div className="space-y-2 sm:space-y-3">
+              {EXAM_TIMETABLE.workingProfessionalSchedule.weekday.map((slot, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col sm:flex-row sm:items-center p-3 sm:p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                >
+                  <div className="w-full sm:w-32 font-bold text-blue-700 text-sm sm:text-base mb-1 sm:mb-0">{slot.time}</div>
+                  <div className="flex-1 text-gray-700 text-sm sm:text-base">{slot.activity}</div>
                 </div>
-              </div>
-
-              {/* Weekly Routine */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-calendar-check text-indigo-600"></i>
-                  Weekly Study Routine
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {Object.entries(EXAM_TIMETABLE.weeklyRoutineWorking).map(([day, activity], index) => (
-                    <div
-                      key={day}
-                      className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="font-bold text-blue-700 mb-2 capitalize">{day}</div>
-                      <p className="text-gray-700 text-sm">{activity}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Milestones */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-flag text-purple-600"></i>
-                  Key Milestones
-                </h3>
-                <div className="space-y-6">
-                  {EXAM_TIMETABLE.milestones.map((milestone, index) => (
-                    <div
-                      key={index}
-                      className="border-l-4 border-blue-500 pl-6 py-4 bg-gradient-to-r from-white to-blue-50 rounded-r-lg"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-lg">{milestone.milestone}</h4>
-                          <div className="text-gray-600 flex items-center gap-4 mt-1">
-                            <span className="flex items-center gap-1">
-                              <i className="fas fa-calendar"></i>
-                              {milestone.date}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <i className="fas fa-check-circle"></i>
-                              {milestone.status}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-3">
-                        <div className="grid grid-cols-2 gap-2">
-                          {milestone.checkpoints.map((checkpoint, idx) => (
-                            <div key={idx} className="flex items-center gap-2 text-gray-700">
-                              <span className={`${checkpoint.startsWith("✓") ? 'text-green-600' : 'text-gray-400'}`}>
-                                {checkpoint.startsWith("✓") ? "✓" : "○"}
-                              </span>
-                              <span className={checkpoint.startsWith("✓") ? "text-green-700" : "text-gray-600"}>
-                                {checkpoint}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Success Tips */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-trophy text-yellow-600"></i>
-                  Success Tips for Working Professionals
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {EXAM_TIMETABLE.successTipsWorking.map((tip, index) => (
-                    <div
-                      key={index}
-                      className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="w-6 h-6 rounded-full bg-yellow-100 text-yellow-800 flex items-center justify-center flex-shrink-0 mt-1">
-                          {index + 1}
-                        </span>
-                        <p className="text-gray-700">{tip}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Resource Allocation */}
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-book-open text-green-600"></i>
-                  Monthly Resource Allocation
-                </h3>
-                <div className="grid grid-cols-3 md:grid-cols-9 gap-2">
-                  {Object.entries(EXAM_TIMETABLE.resourceAllocation).map(([month, resource], index) => (
-                    <div
-                      key={month}
-                      className="text-center bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow"
-                    >
-                      <div className="font-bold text-blue-700 capitalize">{month}</div>
-                      <div className="text-sm text-gray-600 mt-1">{resource}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
+          </div>
 
-            {/* Footer */}
-            <div className=" bottom-0 bg-gradient-to-r from-gray-50 to-white border-t p-6">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  onClick={() => {
-                    // Print the time table
-                    window.print();
-                  }}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3.5 rounded-xl hover:shadow-lg transition-all font-medium flex items-center justify-center gap-2"
+          <div className="mt-6 lg:mt-0">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+              <i className="fas fa-calendar-weekend text-green-600 text-sm sm:text-base"></i>
+              Weekend Schedule
+            </h3>
+            <div className="space-y-2 sm:space-y-3">
+              {EXAM_TIMETABLE.workingProfessionalSchedule.weekend.map((slot, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col sm:flex-row sm:items-center p-3 sm:p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                 >
-                  <i className="fas fa-print"></i>
-                  Print Time Table
-                </button>
-                <button
-                  onClick={() => setShowTimeTable(false)}
-                  className="flex-1 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 py-3.5 rounded-xl hover:shadow-md transition-all font-medium border border-gray-200"
-                >
-                  Close Time Table
-                </button>
-              </div>
-              <p className="text-center text-sm text-gray-500 mt-4">
-                <i className="fas fa-sync-alt mr-1"></i>
-                Plan updated weekly based on your progress
-              </p>
+                  <div className="w-full sm:w-32 font-bold text-green-700 text-sm sm:text-base mb-1 sm:mb-0">{slot.time}</div>
+                  <div className="flex-1 text-gray-700 text-sm sm:text-base">{slot.activity}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      )}
+
+        {/* Subject Priority */}
+        <div className="mb-8 sm:mb-10">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <i className="fas fa-sort-amount-down text-red-600 text-sm sm:text-base"></i>
+            Subject Priority
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {EXAM_TIMETABLE.subjectPriority.map((subject, index) => (
+              <div
+                key={index}
+                className={`p-3 sm:p-4 rounded-lg border ${
+                  subject.priority === "Very High"
+                    ? "bg-red-50 border-red-200"
+                    : subject.priority === "High"
+                    ? "bg-orange-50 border-orange-200"
+                    : subject.priority === "Medium"
+                    ? "bg-yellow-50 border-yellow-200"
+                    : "bg-gray-50 border-gray-200"
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-2">
+                  <h4 className="font-bold text-gray-900 text-sm sm:text-base">{subject.subject}</h4>
+                  <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-bold w-fit ${
+                    subject.priority === "Very High"
+                      ? "bg-red-600 text-white"
+                      : subject.priority === "High"
+                      ? "bg-orange-600 text-white"
+                      : subject.priority === "Medium"
+                      ? "bg-yellow-600 text-white"
+                      : "bg-gray-600 text-white"
+                  }`}>
+                    {subject.priority}
+                  </span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm text-gray-600 gap-1">
+                  <span>Weightage: {subject.weightage}</span>
+                  <span>Order: #{subject.studyOrder}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Weekly Routine */}
+        <div className="mb-8 sm:mb-10">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <i className="fas fa-calendar-check text-indigo-600 text-sm sm:text-base"></i>
+            Weekly Study Routine
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {Object.entries(EXAM_TIMETABLE.weeklyRoutineWorking).map(([day, activity], index) => (
+              <div
+                key={day}
+                className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:shadow-md transition-shadow"
+              >
+                <div className="font-bold text-blue-700 mb-1 sm:mb-2 text-sm sm:text-base capitalize">{day}</div>
+                <p className="text-gray-700 text-xs sm:text-sm">{activity}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Milestones */}
+        <div className="mb-8 sm:mb-10">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <i className="fas fa-flag text-purple-600 text-sm sm:text-base"></i>
+            Key Milestones
+          </h3>
+          <div className="space-y-4 sm:space-y-6">
+            {EXAM_TIMETABLE.milestones.map((milestone, index) => (
+              <div
+                key={index}
+                className="border-l-4 border-blue-500 pl-4 sm:pl-6 py-3 sm:py-4 bg-gradient-to-r from-white to-blue-50 rounded-r-lg"
+              >
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
+                  <div className="flex-1">
+                    <h4 className="font-bold text-gray-900 text-base sm:text-lg">{milestone.milestone}</h4>
+                    <div className="text-gray-600 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-1 text-xs sm:text-sm">
+                      <span className="flex items-center gap-1">
+                        <i className="fas fa-calendar text-xs"></i>
+                        {milestone.date}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <i className="fas fa-check-circle text-xs"></i>
+                        {milestone.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {milestone.checkpoints.map((checkpoint, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-gray-700 text-sm">
+                        <span className={`${checkpoint.startsWith("✓") ? 'text-green-600' : 'text-gray-400'}`}>
+                          {checkpoint.startsWith("✓") ? "✓" : "○"}
+                        </span>
+                        <span className={checkpoint.startsWith("✓") ? "text-green-700" : "text-gray-600"}>
+                          {checkpoint}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Success Tips */}
+        <div className="mb-8 sm:mb-10">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <i className="fas fa-trophy text-yellow-600 text-sm sm:text-base"></i>
+            Success Tips
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            {EXAM_TIMETABLE.successTipsWorking.map((tip, index) => (
+              <div
+                key={index}
+                className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <span className="w-6 h-6 rounded-full bg-yellow-100 text-yellow-800 flex items-center justify-center flex-shrink-0 mt-1 text-xs sm:text-sm">
+                    {index + 1}
+                  </span>
+                  <p className="text-gray-700 text-sm sm:text-base">{tip}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Resource Allocation */}
+        <div>
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+            <i className="fas fa-book-open text-green-600 text-sm sm:text-base"></i>
+            Monthly Resource Allocation
+          </h3>
+          <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-9 gap-1 sm:gap-2">
+            {Object.entries(EXAM_TIMETABLE.resourceAllocation).map(([month, resource], index) => (
+              <div
+                key={month}
+                className="text-center bg-white border border-gray-200 rounded-lg p-2 sm:p-3 hover:shadow-md transition-shadow"
+              >
+                <div className="font-bold text-blue-700 capitalize text-xs sm:text-sm">{month}</div>
+                <div className="text-xs text-gray-600 mt-1">{resource}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="bottom-0 bg-gradient-to-r from-gray-50 to-white border-t p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <button
+            onClick={() => window.print()}
+            className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 sm:py-3.5 rounded-xl hover:shadow-lg transition-all font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
+          >
+            <i className="fas fa-print"></i>
+            Print Time Table
+          </button>
+          <button
+            onClick={() => setShowTimeTable(false)}
+            className="flex-1 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 py-3 sm:py-3.5 rounded-xl hover:shadow-md transition-all font-medium border border-gray-200 text-sm sm:text-base"
+          >
+            Close Time Table
+          </button>
+        </div>
+        <p className="text-center text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4">
+          <i className="fas fa-sync-alt mr-1"></i>
+          Plan updated weekly based on your progress
+        </p>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* ... rest of your existing code remains exactly the same ... */}
       {/* Overall Stats Dashboard */}
