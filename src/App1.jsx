@@ -6760,294 +6760,7 @@ export default function App() {
   const [selectedTipSubject, setSelectedTipSubject] = useState(null);
   const [activeTipTab, setActiveTipTab] = useState("tricks");
   const [showOverallAnalytics, setShowOverallAnalytics] = useState(false);
-  const [showTimeTable, setShowTimeTable] = useState(false); // NEW: Time table modal state
   const timerRef = useRef(null);
-
-  // Define the time table data
-  const EXAM_TIMETABLE = {
-    examDate: "September 2026",
-    currentDate: new Date(2026, 0, 16), // January 16, 2026
-    totalWeeks: 34, // Approximately 8 months (Jan-Sept)
-    
-    phases: [
-      {
-        name: "Foundation Phase",
-        duration: "Week 1-10 (Jan - Mar)",
-        focus: "Building core concepts after work",
-        subjects: [
-          "C Programming",
-          "Data Structures",
-          "Discrete Mathematics",
-          "Database Management"
-        ],
-        studyHours: "Weekdays: 7-10 PM (3 hrs), Weekends: 6 hrs/day",
-        goals: [
-          "Complete basic concepts of core subjects",
-          "Solve 30+ MCQs daily after work",
-          "Make formula sheets on weekends",
-          "Create flashcards during breaks"
-        ],
-        tips: [
-          "Use lunch breaks for quick revisions",
-          "Weekends are for intensive study",
-          "Focus on one subject per weekday evening"
-        ]
-      },
-      {
-        name: "Core Strengthening Phase",
-        duration: "Week 11-20 (Apr - Jun)",
-        focus: "Advanced topics & integration",
-        subjects: [
-          "Object Oriented Programming",
-          "Software Engineering",
-          "Computer Networks",
-          "Web Technology"
-        ],
-        studyHours: "Weekdays: 7-10:30 PM (3.5 hrs), Weekends: 8 hrs/day",
-        goals: [
-          "Master advanced concepts",
-          "Solve previous year papers on weekends",
-          "Join weekend study groups",
-          "Start revision notes"
-        ],
-        tips: [
-          "Take mock tests on Sundays",
-          "Use commute time for audio notes",
-          "Weekend mornings for toughest topics"
-        ]
-      },
-      {
-        name: "Revision Phase",
-        duration: "Week 21-28 (Jul - Aug)",
-        focus: "Systematic revision after work",
-        subjects: ["All 9 Subjects"],
-        studyHours: "Weekdays: 7-11 PM (4 hrs), Weekends: 10 hrs/day",
-        goals: [
-          "Complete 2 full revisions",
-          "Identify weak areas",
-          "Take mock tests every Sunday",
-          "Time-bound practice"
-        ],
-        tips: [
-          "Rotate subjects weekly",
-          "Use Pomodoro technique",
-          "Focus on high-weightage topics first"
-        ]
-      },
-      {
-        name: "Practice & Mock Test Phase",
-        duration: "Week 29-32 (Sep 1-24)",
-        focus: "Speed & accuracy",
-        subjects: ["All Subjects"],
-        studyHours: "Weekdays: 7-11:30 PM (4.5 hrs), Weekends: 12 hrs/day",
-        goals: [
-          "Daily practice tests after work",
-          "Improve speed by 50%",
-          "Analyze mistakes each night",
-          "Final formula revision"
-        ],
-        tips: [
-          "Simulate exam conditions",
-          "Take leave if possible in last 2 weeks",
-          "Focus on weak areas identified"
-        ]
-      },
-      {
-        name: "Final Phase",
-        duration: "Week 33-34 (Sep 25 - Exam)",
-        focus: "Last minute preparation & rest",
-        subjects: ["Weak Areas", "Important Formulas"],
-        studyHours: "Weekdays: 6-10 PM (4 hrs), Weekends: 6 hrs/day",
-        goals: [
-          "Light revision only",
-          "No new topics",
-          "Focus on formulas & shortcuts",
-          "Stay calm & confident"
-        ],
-        tips: [
-          "Reduce study hours gradually",
-          "Get proper sleep",
-          "Avoid discussions about preparation",
-          "Trust your preparation"
-        ]
-      }
-    ],
-    
-    workingProfessionalSchedule: {
-      weekday: [
-        { time: "6:00-7:00 AM", activity: "Morning Revision (Quick MCQs/Audio notes)" },
-        { time: "7:00-9:00 AM", activity: "Get ready, Commute, Work" },
-        { time: "9:00-5:00 PM", activity: "Office Work" },
-        { time: "5:00-6:00 PM", activity: "Commute (Listen to audio notes)" },
-        { time: "6:00-7:00 PM", activity: "Dinner & Rest" },
-        { time: "7:00-10:30 PM", activity: "Focused Study Session" },
-        { time: "10:30-11:00 PM", activity: "Revision & Planning for next day" },
-        { time: "11:00 PM+", activity: "Sleep" }
-      ],
-      weekend: [
-        { time: "6:00-7:00 AM", activity: "Morning Walk/Exercise" },
-        { time: "7:00-9:00 AM", activity: "Study Session 1 (Tough Topics)" },
-        { time: "9:00-10:00 AM", activity: "Breakfast" },
-        { time: "10:00-1:00 PM", activity: "Study Session 2 (Practice)" },
-        { time: "1:00-2:00 PM", activity: "Lunch & Rest" },
-        { time: "2:00-5:00 PM", activity: "Study Session 3 (New Concepts)" },
-        { time: "5:00-6:00 PM", activity: "Break & Refresh" },
-        { time: "6:00-9:00 PM", activity: "Study Session 4 (Revision)" },
-        { time: "9:00 PM+", activity: "Dinner & Relax" }
-      ]
-    },
-    
-    subjectPriority: [
-      { subject: "Data Structures", priority: "Very High", weightage: "20-25%", studyOrder: 1 },
-      { subject: "Software Engineering", priority: "Very High", weightage: "15-20%", studyOrder: 2 },
-      { subject: "Discrete Mathematics", priority: "Very High", weightage: "12-15%", studyOrder: 3 },
-      { subject: "Database Management", priority: "High", weightage: "10-12%", studyOrder: 4 },
-      { subject: "Computer Networks", priority: "High", weightage: "10-12%", studyOrder: 5 },
-      { subject: "C Programming", priority: "Medium", weightage: "8-10%", studyOrder: 6 },
-      { subject: "Object Oriented Programming", priority: "Medium", weightage: "8-10%", studyOrder: 7 },
-      { subject: "Web Technology", priority: "Medium", weightage: "6-8%", studyOrder: 8 },
-      { subject: "Computer Architecture", priority: "Low", weightage: "5-7%", studyOrder: 9 }
-    ],
-    
-    milestones: [
-      { 
-        date: "March 31, 2026", 
-        milestone: "Complete Foundation Phase - All basic concepts clear",
-        status: "Phase 1 Complete",
-        checkpoints: [
-          "✓ Daily study routine established",
-          "✓ All core concepts understood",
-          "✓ 1000+ MCQs practiced",
-          "✓ Formula sheets created"
-        ]
-      },
-      { 
-        date: "June 30, 2026", 
-        milestone: "Complete Core Strengthening - Advanced topics mastered",
-        status: "Phase 2 Complete",
-        checkpoints: [
-          "✓ All subjects covered once",
-          "✓ Previous year papers attempted",
-          "✓ Study group active",
-          "✓ Revision notes ready"
-        ]
-      },
-      { 
-        date: "August 15, 2026", 
-        milestone: "Complete 1st Revision - All subjects revised",
-        status: "Revision 1 Complete",
-        checkpoints: [
-          "✓ All subjects revised once",
-          "✓ Weak areas identified",
-          "✓ Mock test score: 60%+",
-          "✓ Time management improved"
-        ]
-      },
-      { 
-        date: "September 7, 2026", 
-        milestone: "Complete 2nd Revision - Focus on weak areas",
-        status: "Revision 2 Complete",
-        checkpoints: [
-          "✓ 2 full revisions completed",
-          "✓ Weak areas strengthened",
-          "✓ Mock test score: 75%+",
-          "✓ Speed improved by 40%"
-        ]
-      },
-      { 
-        date: "September 21, 2026", 
-        milestone: "Final Mock Tests - Exam ready",
-        status: "Mock Test Phase Complete",
-        checkpoints: [
-          "✓ 20+ full mock tests completed",
-          "✓ Consistent score: 80%+",
-          "✓ Exam strategy finalized",
-          "✓ All formulas memorized"
-        ]
-      },
-      { 
-        date: "September 25, 2026", 
-        milestone: "Formula & Shortcut Revision",
-        status: "Final Revision",
-        checkpoints: [
-          "✓ All formulas revised",
-          "✓ Memory tricks reviewed",
-          "✓ Exam day plan ready",
-          "✓ Mental preparation done"
-        ]
-      },
-      { 
-        date: "September 28, 2026", 
-        milestone: "Last Day Preparation",
-        status: "Final Day",
-        checkpoints: [
-          "✓ Light revision only",
-          "✓ Stationery & admit card ready",
-          "✓ Exam center visited",
-          "✓ Good sleep scheduled"
-        ]
-      },
-      { 
-        date: "September 29, 2026", 
-        milestone: "EXAM DAY - Stay Confident!",
-        status: "Exam Day",
-        checkpoints: [
-          "✓ Reach center 1 hour early",
-          "✓ Carry all documents",
-          "✓ Read questions carefully",
-          "✓ Manage time effectively"
-        ]
-      }
-    ],
-    
-    weeklyRoutineWorking: {
-      monday: "Data Structures (High Priority)",
-      tuesday: "Software Engineering + Discrete Math",
-      wednesday: "Database + Computer Networks",
-      thursday: "C Programming + OOP",
-      friday: "Web Tech + Computer Architecture",
-      saturday: "Mock Test + Weak Areas Analysis",
-      sunday: "Revision + Planning for next week"
-    },
-    
-    successTipsWorking: [
-      "Weekday evenings are sacred - no distractions",
-      "Use lunch breaks for quick formula revisions",
-      "Weekends are for intensive study & mock tests",
-      "Create audio notes for commute time",
-      "Take 5-minute breaks every 45 minutes",
-      "Maintain separate notebooks for each subject",
-      "Sunday night: Plan next week's study schedule",
-      "Join online study groups for working professionals",
-      "Use mobile apps for MCQ practice during breaks",
-      "Prioritize sleep - it improves memory retention",
-      "Inform family about your study schedule",
-      "Batch cook meals on weekends to save time",
-      "Delegate non-essential tasks",
-      "Take 1-2 days leave per month for intensive study"
-    ],
-    
-    resourceAllocation: {
-      january: "Textbooks & Basic Concepts",
-      february: "Reference Books & Examples",
-      march: "Previous Year Papers (5 years)",
-      april: "Mock Test Series 1",
-      may: "Advanced Problems",
-      june: "Mock Test Series 2",
-      july: "Revision & Weak Areas",
-      august: "Speed Practice",
-      september: "Final Revision & Formulas"
-    }
-  };
-
-  // Calculate weeks remaining
-  const calculateWeeksRemaining = () => {
-    const today = new Date();
-    const examDate = new Date(2026, 8, 29); // September 29, 2026
-    const diffTime = examDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.ceil(diffDays / 7);
-  };
 
   // Initialize subjects in localStorage
   useEffect(() => {
@@ -7445,13 +7158,6 @@ export default function App() {
 
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => setShowTimeTable(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              <i className="fas fa-calendar-alt"></i>
-              Time Table
-            </button>
-            <button
               onClick={() => setShowOverallAnalytics(true)}
               className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
             >
@@ -7469,348 +7175,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* TIME TABLE MODAL */}
-      {showTimeTable && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-4"
-          onClick={(e) => e.target === e.currentTarget && setShowTimeTable(false)}
-        >
-          <div className="bg-white rounded-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto shadow-2xl">
-            {/* Header */}
-            <div className=" top-0 bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-3xl font-bold mb-2">Exam Time Table & Study Plan</h2>
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-2">
-                      <i className="fas fa-calendar-day"></i>
-                      <span>Exam Date: {EXAM_TIMETABLE.examDate}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <i className="fas fa-clock"></i>
-                      <span>Weeks Remaining: {calculateWeeksRemaining()} weeks</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <i className="fas fa-user-tie"></i>
-                      <span>Working Professional Plan</span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowTimeTable(false)}
-                  className="text-white hover:text-gray-200 text-2xl"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-
-            <div className="p-6">
-              {/* Study Phases */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-road text-blue-600"></i>
-                  Study Phases Timeline
-                </h3>
-                <div className="space-y-6">
-                  {EXAM_TIMETABLE.phases.map((phase, index) => (
-                    <div
-                      key={index}
-                      className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow"
-                    >
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-                              {index + 1}
-                            </span>
-                            <h4 className="text-xl font-bold text-gray-900">{phase.name}</h4>
-                          </div>
-                          <div className="flex items-center gap-4 text-gray-600 ml-14">
-                            <span className="flex items-center gap-1">
-                              <i className="fas fa-calendar-alt text-sm"></i>
-                              {phase.duration}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <i className="fas fa-bullseye text-sm"></i>
-                              {phase.focus}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <i className="fas fa-clock text-sm"></i>
-                              {phase.studyHours}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid md:grid-cols-3 gap-6">
-                        <div className="bg-blue-50 rounded-lg p-4">
-                          <h5 className="font-bold text-blue-800 mb-2 flex items-center gap-2">
-                            <i className="fas fa-book"></i>
-                            Subjects
-                          </h5>
-                          <ul className="space-y-1">
-                            {phase.subjects.map((subject, idx) => (
-                              <li key={idx} className="text-gray-700">• {subject}</li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="bg-green-50 rounded-lg p-4">
-                          <h5 className="font-bold text-green-800 mb-2 flex items-center gap-2">
-                            <i className="fas fa-flag-checkered"></i>
-                            Goals
-                          </h5>
-                          <ul className="space-y-2">
-                            {phase.goals.map((goal, idx) => (
-                              <li key={idx} className="text-gray-700 flex items-start">
-                                <span className="text-green-600 mr-2">•</span>
-                                {goal}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="bg-yellow-50 rounded-lg p-4">
-                          <h5 className="font-bold text-yellow-800 mb-2 flex items-center gap-2">
-                            <i className="fas fa-lightbulb"></i>
-                            Tips
-                          </h5>
-                          <ul className="space-y-2">
-                            {phase.tips.map((tip, idx) => (
-                              <li key={idx} className="text-gray-700 flex items-start">
-                                <span className="text-yellow-600 mr-2">•</span>
-                                {tip}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Daily Schedule */}
-              <div className="grid md:grid-cols-2 gap-8 mb-10">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                    <i className="fas fa-calendar-day text-purple-600"></i>
-                    Weekday Schedule
-                  </h3>
-                  <div className="space-y-3">
-                    {EXAM_TIMETABLE.workingProfessionalSchedule.weekday.map((slot, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
-                      >
-                        <div className="w-32 font-bold text-blue-700">{slot.time}</div>
-                        <div className="flex-1 text-gray-700">{slot.activity}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                    <i className="fas fa-calendar-weekend text-green-600"></i>
-                    Weekend Schedule
-                  </h3>
-                  <div className="space-y-3">
-                    {EXAM_TIMETABLE.workingProfessionalSchedule.weekend.map((slot, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
-                      >
-                        <div className="w-32 font-bold text-green-700">{slot.time}</div>
-                        <div className="flex-1 text-gray-700">{slot.activity}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Subject Priority */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-sort-amount-down text-red-600"></i>
-                  Subject Priority & Weightage
-                </h3>
-                <div className="grid md:grid-cols-3 gap-4">
-                  {EXAM_TIMETABLE.subjectPriority.map((subject, index) => (
-                    <div
-                      key={index}
-                      className={`p-4 rounded-lg border ${
-                        subject.priority === "Very High"
-                          ? "bg-red-50 border-red-200"
-                          : subject.priority === "High"
-                          ? "bg-orange-50 border-orange-200"
-                          : subject.priority === "Medium"
-                          ? "bg-yellow-50 border-yellow-200"
-                          : "bg-gray-50 border-gray-200"
-                      }`}
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <h4 className="font-bold text-gray-900">{subject.subject}</h4>
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          subject.priority === "Very High"
-                            ? "bg-red-600 text-white"
-                            : subject.priority === "High"
-                            ? "bg-orange-600 text-white"
-                            : subject.priority === "Medium"
-                            ? "bg-yellow-600 text-white"
-                            : "bg-gray-600 text-white"
-                        }`}>
-                          {subject.priority}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-600">
-                        <span>Weightage: {subject.weightage}</span>
-                        <span>Order: #{subject.studyOrder}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Weekly Routine */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-calendar-check text-indigo-600"></i>
-                  Weekly Study Routine
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {Object.entries(EXAM_TIMETABLE.weeklyRoutineWorking).map(([day, activity], index) => (
-                    <div
-                      key={day}
-                      className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="font-bold text-blue-700 mb-2 capitalize">{day}</div>
-                      <p className="text-gray-700 text-sm">{activity}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Milestones */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-flag text-purple-600"></i>
-                  Key Milestones
-                </h3>
-                <div className="space-y-6">
-                  {EXAM_TIMETABLE.milestones.map((milestone, index) => (
-                    <div
-                      key={index}
-                      className="border-l-4 border-blue-500 pl-6 py-4 bg-gradient-to-r from-white to-blue-50 rounded-r-lg"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-lg">{milestone.milestone}</h4>
-                          <div className="text-gray-600 flex items-center gap-4 mt-1">
-                            <span className="flex items-center gap-1">
-                              <i className="fas fa-calendar"></i>
-                              {milestone.date}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <i className="fas fa-check-circle"></i>
-                              {milestone.status}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-3">
-                        <div className="grid grid-cols-2 gap-2">
-                          {milestone.checkpoints.map((checkpoint, idx) => (
-                            <div key={idx} className="flex items-center gap-2 text-gray-700">
-                              <span className={`${checkpoint.startsWith("✓") ? 'text-green-600' : 'text-gray-400'}`}>
-                                {checkpoint.startsWith("✓") ? "✓" : "○"}
-                              </span>
-                              <span className={checkpoint.startsWith("✓") ? "text-green-700" : "text-gray-600"}>
-                                {checkpoint}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Success Tips */}
-              <div className="mb-10">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-trophy text-yellow-600"></i>
-                  Success Tips for Working Professionals
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {EXAM_TIMETABLE.successTipsWorking.map((tip, index) => (
-                    <div
-                      key={index}
-                      className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="w-6 h-6 rounded-full bg-yellow-100 text-yellow-800 flex items-center justify-center flex-shrink-0 mt-1">
-                          {index + 1}
-                        </span>
-                        <p className="text-gray-700">{tip}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Resource Allocation */}
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <i className="fas fa-book-open text-green-600"></i>
-                  Monthly Resource Allocation
-                </h3>
-                <div className="grid grid-cols-3 md:grid-cols-9 gap-2">
-                  {Object.entries(EXAM_TIMETABLE.resourceAllocation).map(([month, resource], index) => (
-                    <div
-                      key={month}
-                      className="text-center bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow"
-                    >
-                      <div className="font-bold text-blue-700 capitalize">{month}</div>
-                      <div className="text-sm text-gray-600 mt-1">{resource}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className=" bottom-0 bg-gradient-to-r from-gray-50 to-white border-t p-6">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  onClick={() => {
-                    // Print the time table
-                    window.print();
-                  }}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3.5 rounded-xl hover:shadow-lg transition-all font-medium flex items-center justify-center gap-2"
-                >
-                  <i className="fas fa-print"></i>
-                  Print Time Table
-                </button>
-                <button
-                  onClick={() => setShowTimeTable(false)}
-                  className="flex-1 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 py-3.5 rounded-xl hover:shadow-md transition-all font-medium border border-gray-200"
-                >
-                  Close Time Table
-                </button>
-              </div>
-              <p className="text-center text-sm text-gray-500 mt-4">
-                <i className="fas fa-sync-alt mr-1"></i>
-                Plan updated weekly based on your progress
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ... rest of your existing code remains exactly the same ... */}
       {/* Overall Stats Dashboard */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="bg-white rounded-xl shadow p-6">
@@ -7901,33 +7265,33 @@ export default function App() {
         </div>
       </div>
 
-      {/* ... rest of your existing modals remain exactly the same ... */}
       {/* STUDY TIPS MODAL */}
       {showTips && (
         <div
-          className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] p-4 backdrop-blur-sm"
+          className="fixed inset-0  flex items-center justify-center z-[60] p-4 backdrop-blur-sm bg-black/30"
           onClick={(e) => e.target === e.currentTarget && setShowTips(false)}
         >
-          <div className="bg-white rounded-2xl w-full max-w-6xl max-h-[95vh] overflow-y-auto shadow-2xl border border-gray-200">
+          <div className="bg-white rounded-2xl w-full max-w-6xl max-h-[95vh] overflow-y-auto shadow-2xl border border-gray-200 ">
             {/* Header */}
-            <div className=" top-0 bg-white z-10 p-6 border-b border-gray-200">
+            <div className="top-0  pb-4 border-b border-gray-200 0 z-10 p-6 bg-gray-500">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
                     <i className="fas fa-lightbulb text-white text-xl"></i>
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">
+                    <h2 className="text-2xl font-bold text-gray-900 :text-white">
                       Study Tips & Memory Tricks
                     </h2>
-                    <p className="text-gray-500 mt-1">
-                      {selectedTipSubject} - Easy to remember shortcuts for exam preparation
+                    <p className="text-gray-500 :text-gray-400 mt-1">
+                      {selectedTipSubject} - Easy to remember shortcuts for exam
+                      preparation
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowTips(false)}
-                  className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors hover:text-gray-700"
+                  className="w-10 h-10 rounded-full bg-gray-100  flex items-center justify-center text-gray-500  hover:bg-gray-200  transition-colors hover:text-gray-700 :hover:text-gray-300"
                 >
                   <i className="fas fa-times text-lg"></i>
                 </button>
@@ -7939,8 +7303,8 @@ export default function App() {
                   onClick={() => setSelectedTipSubject("All Subjects")}
                   className={`px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all ${
                     selectedTipSubject === "All Subjects"
-                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200 :shadow-indigo-900/30"
+                      : "bg-gray-100  text-gray-700  hover:bg-gray-200  hover:shadow-md"
                   }`}
                 >
                   <i className="fas fa-layer-group"></i>
@@ -7953,7 +7317,7 @@ export default function App() {
                     className={`px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all ${
                       selectedTipSubject === subject
                         ? "text-white shadow-lg"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
+                        : "bg-gray-100  text-gray-700  hover:bg-gray-200  hover:shadow-md"
                     }`}
                     style={
                       selectedTipSubject === subject
@@ -7976,8 +7340,8 @@ export default function App() {
                   onClick={() => setActiveTipTab("tricks")}
                   className={`px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all ${
                     activeTipTab === "tricks"
-                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-200"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-200 "
+                      : "bg-gray-100  text-gray-700  hover:bg-gray-200  hover:shadow-md"
                   }`}
                 >
                   <i className="fas fa-magic mr-2"></i>Memory Tricks
@@ -7988,8 +7352,8 @@ export default function App() {
                   onClick={() => setActiveTipTab("notes")}
                   className={`px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all ${
                     activeTipTab === "notes"
-                      ? "bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg shadow-emerald-200"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
+                      ? "bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg shadow-emerald-200 "
+                      : "bg-gray-100  text-gray-700  hover:bg-gray-200  hover:shadow-md"
                   }`}
                 >
                   <i className="fas fa-book mr-2"></i>Detailed Notes
@@ -8000,8 +7364,8 @@ export default function App() {
                   onClick={() => setActiveTipTab("quickref")}
                   className={`px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all ${
                     activeTipTab === "quickref"
-                      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-200"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
+                      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-200 :shadow-amber-900/30"
+                      : "bg-gray-100  text-gray-700  hover:bg-gray-200  hover:shadow-md"
                   }`}
                 >
                   <i className="fas fa-bolt mr-2"></i>Quick Reference
@@ -8012,8 +7376,8 @@ export default function App() {
                   onClick={() => setActiveTipTab("strategy")}
                   className={`px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all ${
                     activeTipTab === "strategy"
-                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-200"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
+                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-200 :shadow-purple-900/30"
+                      : "bg-gray-100  text-gray-700  hover:bg-gray-200  hover:shadow-md"
                   }`}
                 >
                   <i className="fas fa-chess mr-2"></i>Exam Strategy
@@ -8023,7 +7387,7 @@ export default function App() {
 
             {/* TRICKS TAB CONTENT */}
             {activeTipTab === "tricks" && (
-              <div className="space-y-6 p-6">
+              <div className="space-y-6 pt-6">
                 {(selectedTipSubject === "All Subjects"
                   ? Object.entries(STUDY_TIPS).flatMap(
                       ([subject, data]) =>
@@ -8037,7 +7401,7 @@ export default function App() {
                 ).map((trick, index) => (
                   <div
                     key={index}
-                    className="group border border-gray-200 rounded-xl p-5 hover:border-blue-300 transition-all duration-300 hover:shadow-lg bg-white"
+                    className="group border border-gray-200 :border-gray-800 rounded-xl p-5 hover:border-blue-300 :hover:border-blue-700 transition-all duration-300 hover:shadow-lg bg-white "
                   >
                     <div className="flex items-start gap-4">
                       <div
@@ -8048,6 +7412,8 @@ export default function App() {
                           } 0%, ${
                             STUDY_TIPS[trick.subject]?.color || "#4F46E5"
                           }80 100%)`,
+                          opacity:
+                            selectedTipSubject === "All Subjects" ? 1 : 0.9,
                         }}
                       >
                         <i
@@ -8059,7 +7425,7 @@ export default function App() {
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between items-start mb-3">
-                          <h4 className="font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">
+                          <h4 className="font-bold text-lg text-gray-900 :text-white group-hover:text-blue-600 :group-hover:text-blue-400 transition-colors">
                             {trick.title}
                           </h4>
                           {selectedTipSubject === "All Subjects" && (
@@ -8080,18 +7446,18 @@ export default function App() {
                             </span>
                           )}
                         </div>
-                        <p className="text-gray-600 leading-relaxed">
+                        <p className="text-gray-600  leading-relaxed">
                           {trick.content}
                         </p>
                         {trick.example && (
-                          <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                          <div className="mt-3 p-3 bg-blue-50 :bg-blue-900/20 rounded-lg border border-blue-100 :border-blue-800/30">
                             <div className="flex items-center gap-2 mb-1">
                               <i className="fas fa-eye text-blue-500"></i>
-                              <span className="text-sm font-medium text-blue-700">
+                              <span className="text-sm font-medium text-blue-700 :text-blue-300">
                                 Example:
                               </span>
                             </div>
-                            <p className="text-sm text-blue-600">
+                            <p className="text-sm text-blue-600 :text-blue-400">
                               {trick.example}
                             </p>
                           </div>
@@ -8105,7 +7471,7 @@ export default function App() {
 
             {/* DETAILED NOTES TAB - For All Subjects */}
             {activeTipTab === "notes" && (
-              <div className="space-y-8 p-6">
+              <div className="space-y-8 pt-6">
                 {selectedTipSubject === "All Subjects" ? (
                   // Show all subjects notes in cards
                   <div className="grid md:grid-cols-2 gap-6">
@@ -8114,9 +7480,9 @@ export default function App() {
                         data.detailedNotes && (
                           <div
                             key={subject}
-                            className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all bg-white"
+                            className="border border-gray-200 :border-gray-800 rounded-xl p-6 hover:shadow-lg transition-all bg-white "
                           >
-                            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
+                            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100 :border-gray-700">
                               <div
                                 className="w-10 h-10 rounded-lg flex items-center justify-center text-white"
                                 style={{
@@ -8125,7 +7491,7 @@ export default function App() {
                               >
                                 <i className={STUDY_TIPS[subject]?.icon}></i>
                               </div>
-                              <h3 className="text-xl font-bold text-gray-900">
+                              <h3 className="text-xl font-bold text-gray-900 :text-white">
                                 {subject} Notes
                               </h3>
                             </div>
@@ -8136,18 +7502,19 @@ export default function App() {
                                 .map(([topic, topicData]) => (
                                   <div
                                     key={topic}
-                                    className="bg-gray-50 p-4 rounded-lg"
+                                    className="bg-gray-50 :bg-gray-900/50 p-4 rounded-lg"
                                   >
-                                    <h4 className="font-bold text-gray-800 mb-2">
+                                    <h4 className="font-bold text-gray-800 :text-gray-200 mb-2">
                                       {topic}
                                     </h4>
                                     <div className="grid grid-cols-2 gap-2">
-                                      <div className="text-sm text-blue-600">
+                                      <div className="text-sm text-blue-600 :text-blue-400">
                                         <i className="fas fa-key mr-1"></i>
-                                        {topicData.keyConcepts?.length || 0}{" "}
+                                        {topicData.keyConcepts?.length ||
+                                          0}{" "}
                                         Concepts
                                       </div>
-                                      <div className="text-sm text-green-600">
+                                      <div className="text-sm text-green-600 :text-green-400">
                                         <i className="fas fa-star mr-1"></i>
                                         {topicData.importantPoints?.length ||
                                           0}{" "}
@@ -8163,7 +7530,7 @@ export default function App() {
                                 setSelectedTipSubject(subject);
                                 setActiveTipTab("notes");
                               }}
-                              className="w-full mt-4 py-2.5 text-sm bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 rounded-lg hover:shadow-md transition-all flex items-center justify-center gap-2"
+                              className="w-full mt-4 py-2.5 text-sm bg-gradient-to-r from-gray-100 to-gray-50 :from-gray-800 :to-gray-900 text-gray-700  rounded-lg hover:shadow-md transition-all flex items-center justify-center gap-2"
                             >
                               View Full Notes
                               <i className="fas fa-arrow-right"></i>
@@ -8180,9 +7547,9 @@ export default function App() {
                   ).map(([topic, data]) => (
                     <div
                       key={topic}
-                      className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all bg-white"
+                      className="border border-gray-200 :border-gray-800 rounded-xl p-6 hover:shadow-lg transition-all bg-white "
                     >
-                      <h3 className="text-xl font-bold mb-4 pb-3 border-b border-gray-100 text-gray-900">
+                      <h3 className="text-xl font-bold mb-4 pb-3 border-b border-gray-100 :border-gray-700 text-gray-900 :text-white">
                         <i
                           className="fas fa-bookmark mr-2"
                           style={{
@@ -8193,18 +7560,18 @@ export default function App() {
                       </h3>
 
                       <div className="grid lg:grid-cols-3 gap-6">
-                        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-5 rounded-xl border border-blue-100">
-                          <h4 className="font-bold text-blue-800 mb-3 flex items-center">
+                        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 :from-blue-900/20 :to-cyan-900/20 p-5 rounded-xl border border-blue-100 :border-blue-800/30">
+                          <h4 className="font-bold text-blue-800 :text-blue-300 mb-3 flex items-center">
                             <i className="fas fa-key mr-2"></i>Key Concepts
                           </h4>
                           <ul className="space-y-3">
                             {data.keyConcepts?.map((concept, idx) => (
                               <li
                                 key={idx}
-                                className="text-gray-700 flex items-start"
+                                className="text-gray-700  flex items-start"
                               >
-                                <span className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
-                                  <span className="text-xs font-bold text-blue-600">
+                                <span className="w-5 h-5 rounded-full bg-blue-100 :bg-blue-800 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                                  <span className="text-xs font-bold text-blue-600 :text-blue-300">
                                     {idx + 1}
                                   </span>
                                 </span>
@@ -8214,34 +7581,34 @@ export default function App() {
                           </ul>
                         </div>
 
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-5 rounded-xl border border-green-100">
-                          <h4 className="font-bold text-green-800 mb-3 flex items-center">
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 :from-green-900/20 :to-emerald-900/20 p-5 rounded-xl border border-green-100 :border-green-800/30">
+                          <h4 className="font-bold text-green-800 :text-green-300 mb-3 flex items-center">
                             <i className="fas fa-star mr-2"></i>Important Points
                           </h4>
                           <ul className="space-y-3">
                             {data.importantPoints?.map((point, idx) => (
                               <li
                                 key={idx}
-                                className="text-gray-700 flex items-start"
+                                className="text-gray-700  flex items-start"
                               >
-                                <i className="fas fa-check-circle text-green-500 mt-0.5 mr-3 flex-shrink-0"></i>
+                                <i className="fas fa-check-circle text-green-500 :text-green-400 mt-0.5 mr-3 flex-shrink-0"></i>
                                 {point}
                               </li>
                             ))}
                           </ul>
                         </div>
 
-                        <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-5 rounded-xl border border-purple-100">
-                          <h4 className="font-bold text-purple-800 mb-3 flex items-center">
+                        <div className="bg-gradient-to-br from-purple-50 to-pink-50 :from-purple-900/20 :to-pink-900/20 p-5 rounded-xl border border-purple-100 :border-purple-800/30">
+                          <h4 className="font-bold text-purple-800 :text-purple-300 mb-3 flex items-center">
                             <i className="fas fa-brain mr-2"></i>Memory Aids
                           </h4>
                           <ul className="space-y-3">
                             {data.memoryAids?.map((aid, idx) => (
                               <li
                                 key={idx}
-                                className="text-gray-700 flex items-start"
+                                className="text-gray-700  flex items-start"
                               >
-                                <i className="fas fa-lightbulb text-yellow-500 mt-0.5 mr-3 flex-shrink-0"></i>
+                                <i className="fas fa-lightbulb text-yellow-500 :text-yellow-400 mt-0.5 mr-3 flex-shrink-0"></i>
                                 {aid}
                               </li>
                             ))}
@@ -8256,18 +7623,19 @@ export default function App() {
 
             {/* QUICK REFERENCE TAB - For All Subjects */}
             {activeTipTab === "quickref" && (
-              <div className="space-y-6 p-6">
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5 mb-6">
+              <div className="space-y-6 pt-6">
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 :from-amber-900/20 :to-orange-900/20 border border-amber-200 :border-amber-800/30 rounded-xl p-5 mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                      <i className="fas fa-info-circle text-amber-600"></i>
+                    <div className="w-10 h-10 rounded-full bg-amber-100 :bg-amber-900 flex items-center justify-center">
+                      <i className="fas fa-info-circle text-amber-600 :text-amber-400"></i>
                     </div>
                     <div>
-                      <h4 className="font-bold text-amber-800">
+                      <h4 className="font-bold text-amber-800 :text-amber-300">
                         Quick Answer Reference
                       </h4>
-                      <p className="text-sm text-amber-700 mt-1">
-                        Use this as a cheat sheet for quick revision before the exam
+                      <p className="text-sm text-amber-700 :text-amber-400 mt-1">
+                        Use this as a cheat sheet for quick revision before the
+                        exam
                       </p>
                     </div>
                   </div>
@@ -8281,7 +7649,7 @@ export default function App() {
                         data.quickReference && (
                           <div
                             key={subject}
-                            className="border border-gray-200 rounded-xl p-5"
+                            className="border border-gray-200 :border-gray-800 rounded-xl p-5"
                           >
                             <div className="flex items-center gap-3 mb-4">
                               <div
@@ -8292,7 +7660,7 @@ export default function App() {
                               >
                                 <i className={STUDY_TIPS[subject]?.icon}></i>
                               </div>
-                              <h3 className="text-lg font-bold text-gray-900">
+                              <h3 className="text-lg font-bold text-gray-900 :text-white">
                                 {subject} Quick Reference
                               </h3>
                             </div>
@@ -8302,14 +7670,14 @@ export default function App() {
                                 .map(([questionId, answer]) => (
                                   <div
                                     key={questionId}
-                                    className="border border-gray-100 rounded-lg p-4 hover:border-blue-300 transition-colors bg-white"
+                                    className="border border-gray-100 :border-gray-800 rounded-lg p-4 hover:border-blue-300 :hover:border-blue-700 transition-colors bg-white /50"
                                   >
                                     <div className="flex justify-between items-start mb-2">
-                                      <span className="font-mono font-bold text-gray-700">
+                                      <span className="font-mono font-bold text-gray-700 ">
                                         {questionId}
                                       </span>
                                     </div>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-gray-600 :text-gray-400">
                                       {answer}
                                     </p>
                                   </div>
@@ -8320,7 +7688,7 @@ export default function App() {
                                 setSelectedTipSubject(subject);
                                 setActiveTipTab("quickref");
                               }}
-                              className="w-full mt-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                              className="w-full mt-4 py-2 text-sm bg-gray-100  text-gray-700  rounded-lg hover:bg-gray-200  transition-colors"
                             >
                               View All {subject} References
                             </button>
@@ -8337,18 +7705,18 @@ export default function App() {
                       ).map(([questionId, answer]) => (
                         <div
                           key={questionId}
-                          className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all bg-white group"
+                          className="border border-gray-200 :border-gray-800 rounded-xl p-5 hover:shadow-lg transition-all bg-white  group"
                         >
                           <div className="flex justify-between items-start mb-3">
-                            <span className="font-mono font-bold text-lg text-gray-900">
+                            <span className="font-mono font-bold text-lg text-gray-900 :text-white">
                               {questionId}
                             </span>
-                            <span className="px-3 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-600 rounded-full border">
+                            <span className="px-3 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 :from-gray-800 :to-gray-900 text-gray-600 :text-gray-400 rounded-full border">
                               {selectedTipSubject}
                             </span>
                           </div>
-                          <p className="text-gray-700 mb-4">{answer}</p>
-                          <div className="pt-3 border-t border-gray-100 flex justify-between items-center">
+                          <p className="text-gray-700  mb-4">{answer}</p>
+                          <div className="pt-3 border-t border-gray-100 :border-gray-700 flex justify-between items-center">
                             <div className="flex items-center gap-2">
                               <div
                                 className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs"
@@ -8363,12 +7731,12 @@ export default function App() {
                                   }
                                 ></i>
                               </div>
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-gray-500 :text-gray-400">
                                 Quick Answer
                               </span>
                             </div>
                             <i
-                              className="fas fa-copy text-gray-400 group-hover:text-blue-500 transition-colors cursor-pointer"
+                              className="fas fa-copy text-gray-400 :text-gray-600 group-hover:text-blue-500 transition-colors cursor-pointer"
                               onClick={() =>
                                 navigator.clipboard.writeText(answer)
                               }
@@ -8384,7 +7752,7 @@ export default function App() {
 
             {/* EXAM STRATEGY TAB - For All Subjects */}
             {activeTipTab === "strategy" && (
-              <div className="space-y-8 p-6">
+              <div className="space-y-8 pt-6">
                 {selectedTipSubject === "All Subjects" ? (
                   // Strategy overview for all subjects
                   <div className="grid lg:grid-cols-3 gap-6">
@@ -8393,7 +7761,7 @@ export default function App() {
                         data.examStrategy && (
                           <div
                             key={subject}
-                            className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all bg-white"
+                            className="border border-gray-200 :border-gray-800 rounded-xl p-6 hover:shadow-lg transition-all bg-white "
                           >
                             <div className="flex items-center gap-3 mb-4">
                               <div
@@ -8405,37 +7773,41 @@ export default function App() {
                                 <i className={STUDY_TIPS[subject]?.icon}></i>
                               </div>
                               <div>
-                                <h3 className="font-bold text-lg text-gray-900">
+                                <h3 className="font-bold text-lg text-gray-900 :text-white">
                                   {subject} Strategy
                                 </h3>
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-gray-500 :text-gray-400">
                                   Exam preparation guide
                                 </p>
                               </div>
                             </div>
 
                             <div className="space-y-3">
-                              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-3 rounded-lg">
+                              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 :from-blue-900/20 :to-cyan-900/20 p-3 rounded-lg">
                                 <div className="flex items-center gap-2 mb-1">
                                   <i className="fas fa-chart-pie text-blue-500"></i>
-                                  <span className="text-sm font-medium text-blue-700">
+                                  <span className="text-sm font-medium text-blue-700 :text-blue-300">
                                     Focus Areas:
                                   </span>
                                 </div>
-                                <span className="text-xs text-gray-600">
-                                  {data.examStrategy.topicWeightage?.length || 0} key topics
+                                <span className="text-xs text-gray-600 :text-gray-400">
+                                  {data.examStrategy.topicWeightage?.length ||
+                                    0}{" "}
+                                  key topics
                                 </span>
                               </div>
 
-                              <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg">
+                              <div className="bg-gradient-to-r from-green-50 to-emerald-50 :from-green-900/20 :to-emerald-900/20 p-3 rounded-lg">
                                 <div className="flex items-center gap-2 mb-1">
                                   <i className="fas fa-graduation-cap text-green-500"></i>
-                                  <span className="text-sm font-medium text-green-700">
+                                  <span className="text-sm font-medium text-green-700 :text-green-300">
                                     Tips:
                                   </span>
                                 </div>
-                                <span className="text-xs text-gray-600">
-                                  {data.examStrategy.preparationTips?.length || 0} preparation tips
+                                <span className="text-xs text-gray-600 :text-gray-400">
+                                  {data.examStrategy.preparationTips?.length ||
+                                    0}{" "}
+                                  preparation tips
                                 </span>
                               </div>
 
@@ -8444,7 +7816,7 @@ export default function App() {
                                   setSelectedTipSubject(subject);
                                   setActiveTipTab("strategy");
                                 }}
-                                className="w-full mt-4 py-2.5 text-sm bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 rounded-lg hover:shadow-md transition-all"
+                                className="w-full mt-4 py-2.5 text-sm bg-gradient-to-r from-gray-100 to-gray-50 :from-gray-800 :to-gray-900 text-gray-700  rounded-lg hover:shadow-md transition-all"
                               >
                                 View Full Strategy
                               </button>
@@ -8457,32 +7829,34 @@ export default function App() {
                   // Full strategy for selected subject
                   <div className="space-y-8">
                     {/* Topic Weightage */}
-                    <div className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all bg-white">
-                      <h3 className="text-xl font-bold mb-5 pb-3 border-b border-gray-100 text-gray-900 flex items-center gap-3">
+                    <div className="border border-gray-200 :border-gray-800 rounded-xl p-6 hover:shadow-lg transition-all bg-white ">
+                      <h3 className="text-xl font-bold mb-5 pb-3 border-b border-gray-100 :border-gray-700 text-gray-900 :text-white flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
                           <i className="fas fa-chart-pie text-white"></i>
                         </div>
                         Topic Weightage
                       </h3>
                       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {STUDY_TIPS[selectedTipSubject]?.examStrategy?.topicWeightage?.map((item, idx) => {
+                        {STUDY_TIPS[
+                          selectedTipSubject
+                        ]?.examStrategy?.topicWeightage?.map((item, idx) => {
                           const [topic, weightage] = item.split(":");
                           return (
                             <div
                               key={idx}
-                              className="group flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-white border border-gray-100 hover:border-blue-300 transition-all"
+                              className="group flex items-center justify-between p-4 bg-gray-50 :bg-gray-900/50 rounded-xl hover:bg-white :hover:bg-gray-800 border border-gray-100 :border-gray-800 hover:border-blue-300 :hover:border-blue-700 transition-all"
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                  <span className="text-sm font-bold text-blue-600">
+                                <div className="w-8 h-8 rounded-lg bg-blue-100 :bg-blue-900 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                  <span className="text-sm font-bold text-blue-600 :text-blue-400">
                                     {idx + 1}
                                   </span>
                                 </div>
-                                <span className="font-medium text-gray-800">
+                                <span className="font-medium text-gray-800 :text-gray-200">
                                   {topic}
                                 </span>
                               </div>
-                              <span className="font-bold text-lg text-indigo-600">
+                              <span className="font-bold text-lg text-indigo-600 :text-indigo-400">
                                 {weightage}
                               </span>
                             </div>
@@ -8492,41 +7866,45 @@ export default function App() {
                     </div>
 
                     {/* Preparation Tips */}
-                    <div className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all bg-white">
-                      <h3 className="text-xl font-bold mb-5 pb-3 border-b border-gray-100 text-gray-900 flex items-center gap-3">
+                    <div className="border border-gray-200 :border-gray-800 rounded-xl p-6 hover:shadow-lg transition-all bg-white ">
+                      <h3 className="text-xl font-bold mb-5 pb-3 border-b border-gray-100 :border-gray-700 text-gray-900 :text-white flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
                           <i className="fas fa-graduation-cap text-white"></i>
                         </div>
                         Preparation Strategy
                       </h3>
                       <div className="grid md:grid-cols-2 gap-4">
-                        {STUDY_TIPS[selectedTipSubject]?.examStrategy?.preparationTips?.map((tip, idx) => (
+                        {STUDY_TIPS[
+                          selectedTipSubject
+                        ]?.examStrategy?.preparationTips?.map((tip, idx) => (
                           <div
                             key={idx}
-                            className="group flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100 hover:border-blue-300 transition-all"
+                            className="group flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 :from-blue-900/20 :to-cyan-900/20 rounded-xl border border-blue-100 :border-blue-800/30 hover:border-blue-300 :hover:border-blue-700 transition-all"
                           >
-                            <span className="font-bold text-xl text-blue-600 min-w-8">
+                            <span className="font-bold text-xl text-blue-600 :text-blue-400 min-w-8">
                               {idx + 1}
                             </span>
-                            <span className="text-gray-700">{tip}</span>
+                            <span className="text-gray-700 ">{tip}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     {/* Time Management */}
-                    <div className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all bg-white">
-                      <h3 className="text-xl font-bold mb-5 pb-3 border-b border-gray-100 text-gray-900 flex items-center gap-3">
+                    <div className="border border-gray-200 :border-gray-800 rounded-xl p-6 hover:shadow-lg transition-all bg-white ">
+                      <h3 className="text-xl font-bold mb-5 pb-3 border-b border-gray-100 :border-gray-700 text-gray-900 :text-white flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
                           <i className="fas fa-clock text-white"></i>
                         </div>
                         Time Management
                       </h3>
                       <div className="grid md:grid-cols-2 gap-6">
-                        {STUDY_TIPS[selectedTipSubject]?.examStrategy?.timeManagement?.map((item, idx) => (
+                        {STUDY_TIPS[
+                          selectedTipSubject
+                        ]?.examStrategy?.timeManagement?.map((item, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100 hover:shadow-md transition-all"
+                            className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 :from-purple-900/20 :to-pink-900/20 rounded-xl border border-purple-100 :border-purple-800/30 hover:shadow-md transition-all"
                           >
                             <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
                               <i
@@ -8535,7 +7913,7 @@ export default function App() {
                                 }`}
                               ></i>
                             </div>
-                            <span className="text-gray-700 flex-1">
+                            <span className="text-gray-700  flex-1">
                               {item}
                             </span>
                           </div>
@@ -8548,25 +7926,26 @@ export default function App() {
             )}
 
             {/* Footer */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="mt-8 pt-6 border-t border-gray-200 :border-gray-800">
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => setShowTips(false)}
-                  className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3.5 rounded-xl hover:shadow-lg hover:shadow-indigo-200 transition-all font-medium"
+                  className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3.5 rounded-xl hover:shadow-lg hover:shadow-indigo-200 :hover:shadow-indigo-900/30 transition-all font-medium"
                 >
                   Close Tips
                 </button>
                 <button
                   onClick={() => {
+                    // Print or export functionality
                     window.print();
                   }}
-                  className="flex-1 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 py-3.5 rounded-xl hover:shadow-md transition-all font-medium border border-gray-200 flex items-center justify-center gap-2"
+                  className="flex-1 bg-gradient-to-r from-gray-100 to-gray-50 :from-gray-800 :to-gray-900 text-gray-700  py-3.5 rounded-xl hover:shadow-md transition-all font-medium border border-gray-200 :border-gray-800 flex items-center justify-center gap-2"
                 >
                   <i className="fas fa-print"></i>
                   Print Summary
                 </button>
               </div>
-              <p className="text-center text-xs text-gray-500 mt-4">
+              <p className="text-center text-xs text-gray-500 :text-gray-400 mt-4">
                 <i className="fas fa-sync-alt mr-1"></i>
                 Updated daily with new tips and strategies
               </p>
@@ -9074,7 +8453,7 @@ export default function App() {
         </div>
       )}
 
-      {/* SUBJECT ANALYTICS MODAL */}
+      {/* SUBJECT ANALYTICS MODAL - Updated with more details */}
       {analyticsOpen && userData?.subjects?.[analyticsOpen] && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
@@ -9258,7 +8637,7 @@ export default function App() {
         </div>
       )}
 
-      {/* CANCEL CONFIRMATION MODAL */}
+      {/* CANCEL CONFIRMATION MODAL - Keep as is */}
       {showCancelConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
           <div className="bg-white p-8 rounded-xl w-full max-w-md text-center">
@@ -9294,7 +8673,7 @@ export default function App() {
         </div>
       )}
 
-      {/* RESULT MODAL */}
+      {/* RESULT MODAL - Keep as is */}
       {resultsOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white p-8 rounded-xl w-full max-w-md text-center">
